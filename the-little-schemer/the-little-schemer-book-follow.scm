@@ -30,9 +30,6 @@
 
 
 
-
-
-
 (define lat?
   (lambda (l)
     (cond ((null? l) #t)
@@ -97,28 +94,28 @@
     (cond (a #t)
 	  (else b))))
 
-(define sau
-  (lambda (a b)
-    (cond (a #t)
-	  (b #t)
-	  (else #f))))
+;; (define sau
+;;   (lambda (a b)
+;;     (cond (a #t)
+;; 	  (b #t)
+;; 	  (else #f))))
 
 
-(define member?
-  (lambda (a lat)
-    (cond ((null? lat) #f)
-	  (else (or (eq? a (car lat))
-		    (member? a (cdr lat)))))))
+;; (define member?
+;;   (lambda (a lat)
+;;     (cond ((null? lat) #f)
+;; 	  (else (or (eq? a (car lat))
+;; 		    (member? a (cdr lat)))))))
 
 
-(define rember
-  (lambda (a lat)
-    (cond
-     ((null? lat) '())
-     (else (cond
-	    ((eq? (car lat) a) (cdr lat))
-	    (else (cons (car lat)
-			(rember a (cdr lat)))))))))
+;; (define rember
+;;   (lambda (a lat)
+;;     (cond
+;;      ((null? lat) '())
+;;      (else (cond
+;; 	    ((eq? (car lat) a) (cdr lat))
+;; 	    (else (cons (car lat)
+;; 			(rember a (cdr lat)))))))))
 
 
 
@@ -145,15 +142,15 @@
 	(else (cons (car l)
 		    (insertR* new old (cdr l))))))
 
-(define new 'pecker)
-(define old 'chuck)
-(define l '(
-	    (how much (wood))
-	    could
-	    ((a (wood) chuck))
-	    (((chuck)))
-	    (if (a) ((wood chuck)))
-	    could chuck wood))
+;; (define new 'pecker)
+;; (define old 'chuck)
+;; (define l '(
+;; 	    (how much (wood))
+;; 	    could
+;; 	    ((a (wood) chuck))
+;; 	    (((chuck)))
+;; 	    (if (a) ((wood chuck)))
+;; 	    could chuck wood))
 
 
 (define (insertL* new old l)
@@ -204,8 +201,8 @@
 		    (subst* new old (cdr l))))))
 
 
-(define a 'chips)
-(define l '((potato) (chips ((with) fish) (chips))))
+;; (define a 'chips)
+;; (define l '((potato) (chips ((with) fish) (chips))))
 
 (define (member* a l)
   (cond ((null? l) #f)
@@ -333,12 +330,12 @@
 	    (rempick (sub1 n)
 		     (cdr lat)))))
 
-(define (eqlist? xs ys)
-  (cond ((and (null? xs) (null? ys)) #t)
-	((or (null? xs) (null? ys)) #f)
-	((eqan? (car xs) (car ys))
-	 (eqlist? (cdr xs) (cdr ys)))
-	(else #f)))
+;; (define (eqlist? xs ys)
+;;   (cond ((and (null? xs) (null? ys)) #t)
+;; 	((or (null? xs) (null? ys)) #f)
+;; 	((eqan? (car xs) (car ys))
+;; 	 (eqlist? (cdr xs) (cdr ys)))
+;; 	(else #f)))
 
 
 (define (eqlist? xs ys)
@@ -346,8 +343,67 @@
 	((or (null? xs) (null? ys)) #f)
 	((and (pair? (car xs)) (pair? (car ys)))
 	 (and (eqlist? (car xs) (car ys))
-	      (eqlist (cdr xs) (cdr ys)))) 
+	      (eqlist? (cdr xs) (cdr ys)))) 
 	((or (pair? (car xs)) (pair? (car ys))) #f)
 	((eqan? (car xs) (car ys))
 	 (eqlist? (cdr xs) (cdr ys)))
 	(else #f)))
+
+;; (define (eqlist? xs ys)
+;;   (cond ((and (null? xs) (null? ys)) #t)
+;; 	((or (null? xs) (null? ys)) #f)
+;; 	(else (and (equal? (car xs) (car ys))
+;; 		   (eqlist? (cdr xs) (cdr ys))))))
+	
+
+;; eu: page 92, yoyo: page 57
+
+(define (equal? a b)
+  (cond ((and (pair? a) (pair? b)) (eqlist? a b))
+	((or (pair? a) (pair? b)) #f)
+	(else (eqan? a b))))
+
+(define (plus a b)
+  (cond ((zero? b) a)
+	(else (add1 (plus a (sub1 b))))))
+
+(define (plus a b)
+  (cond ((zero? b) a)
+	(else (plus (add1 a) (sub1 b)))))
+
+
+(define test-expressions--numbered?
+  '((3 + (x ^ 2))
+    (2 + (2 * 4))
+    (x + (2 - 3))
+    ((1 + 1) / (3 - 10))
+    ((1 + x) / (3 ^ 10))))
+
+(define numbered?--accepted-symbols
+  '(+ * ^ /))
+
+(define (numbered? z)
+  (cond ((null? z) #t)
+	((number? (car z)) (numbered? (cdr z)))
+	((symbol? (car z))
+	 (if (member (car z)
+		     numbered?--accepted-symbols)
+	     (numbered? (cdr z))
+	     #f))
+	(else (or (numbered? (car z))
+		  (numbered? (cdr z))))))
+
+(define (test-numbered? expressions)
+  (let ((single-test
+	 (lambda (expr)
+	   (display expr)
+	   (display " -> ")
+	   (display (numbered? expr))
+	   (newline))))
+    (let loop ((exprs expressions))
+      (if (null? (cdr exprs))
+	  (single-test (car exprs))
+	  (begin
+	    (single-test (car exprs))
+	    (loop (cdr exprs)))))))
+			 
